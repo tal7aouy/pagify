@@ -1,0 +1,39 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+
+use Tal7aouy\Pagify\PaginatorFactory;
+
+define('DEFAULT_PAGE', 1);
+define('DEFAULT_PER_PAGE', 10);
+
+function usage()
+{
+    echo "Usage: pagify [--page PAGE] [--per-page PER_PAGE]\n";
+    echo "Options:\n";
+    echo "  --page PAGE        Specify the page number (default: 1)\n";
+    echo "  --per-page PER_PAGE Specify the number of items per page (default: 10)\n";
+    echo "  --help             Display this help message\n";
+    exit;
+}
+
+$options = getopt("", ["page:", "per-page:", "help"]);
+
+if (isset($options['help'])) {
+    usage();
+}
+
+$currentPage = isset($options['page']) ? (int)$options['page'] : DEFAULT_PAGE;
+$perPage = isset($options['per-page']) ? (int)$options['per-page'] : DEFAULT_PER_PAGE;
+
+if ($currentPage <= 0 || $perPage <= 0) {
+    echo "Error: Page and per-page values must be positive integers.\n";
+    usage();
+}
+
+$items = range(1, 100); // Example data
+$totalItems = count($items);
+
+$paginator = PaginatorFactory::createPaginator($items, $totalItems, $currentPage, $perPage);
+echo $paginator->toJson();
